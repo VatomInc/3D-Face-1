@@ -206,7 +206,7 @@ module.exports = class Face3D extends BaseFace {
             })
 
             // Create animation manager
-            this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.rawPayload)
+            this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload)
 
         })
 
@@ -289,7 +289,7 @@ module.exports = class Face3D extends BaseFace {
 
         // Notify animation manager
         if (this.animation)
-            this.animation.onStateChanged(this.vatom.rawPayload)
+            this.animation.onStateChanged(this.vatom.payload)
 
     }
 

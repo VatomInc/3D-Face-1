@@ -8,7 +8,7 @@ This is a face for the Android, iOS and Web BLOCKv SDKs, which allows rendering 
 
 To use in the Web SDK, simply import and register when your app starts up:
 
-```
+``` javascript
 import { VatomView } from '@blockv/sdk/face'
 import Face3D from '@blockv/3d-face'
 

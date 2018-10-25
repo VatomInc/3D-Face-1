@@ -15,7 +15,7 @@ module.exports.entry = "./src/index.js";
 
 // The final app's JS output file
 module.exports.output = {
-    path: __dirname + "/dist/",
+    path: __dirname + "/webapp/",
     filename: "Face3D.min.js",
     libraryTarget:"var",
     library:"Face3D"
@@ -23,13 +23,14 @@ module.exports.output = {
 // Output a sourcemap
 module.exports.devtool = "source-map";
 
-// Support for resource files
+// Support for resource files. NOTE: We're using a big number to embed, because our web view will be run from a file:
+// URL and apparently 3D textures have to be loaded over CORS. It's stupid.
 module.exports.module.rules.push({
     test: /\.(jpg|png|svg)/,
     exclude: /node_modules/,
     loader: 'url-loader',
     options: {
-        limit: 8192,
+        limit: 1024 * 1024 * 16, //8192,
         name: '[name].[ext]'
     }
 });

@@ -1,4 +1,7 @@
 
+# System files to ignore
+.DS_Store
+
 # Node JS files to ignore
 node_modules
 dist

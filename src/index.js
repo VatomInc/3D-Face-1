@@ -148,14 +148,15 @@ module.exports = class Face3D extends BaseFace {
             return Promise.reject(new Error("No scene resource found"))
 
         // Check if got a GLB resource
-        var resourceURL = this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')
-        var isGLB = resourceURL.toLowerCase().indexOf(".v3d") == -1
+        var isGLB = resource.value.value.toLowerCase().indexOf(".v3d") == -1
 
-        // Load scene
-        var scenePromise = isGLB ? this.loadGLTFScene(resourceURL) : V3DLoader.load(resourceURL).then(scene => ({ scene }))
+        // Sign the URL
+        this.whenLoadComplete = Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value)).then(signedURL => {
 
-        // Load file
-        scenePromise.then(({ scene, animations }) => {
+            // Load scene
+            return isGLB ? this.loadGLTFScene(signedURL) : V3DLoader.load(signedURL).then(scene => ({ scene }))
+
+        }).then(({ scene, animations }) => {
 
             // Hide loader and placeholder image
             if (this.placeholderImg.parentNode) this.placeholderImg.parentNode.removeChild(this.placeholderImg)

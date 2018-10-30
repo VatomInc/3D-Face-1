@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 28
@@ -29,4 +30,34 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "io.blockv.sdk:faceview:1.0.0"
+}
+
+def libraryGroupId = 'io.blockv.faces'
+def libraryArtifactId = 'face3d'
+def libraryVersion = '1.0.4'
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
+publishing {
+    publications {
+        core(MavenPublication) {
+            groupId libraryGroupId
+            artifactId libraryArtifactId
+            version libraryVersion
+            artifact(sourceJar)
+            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            url "https://maven.blockv.io/artifactory/BLOCKv/"
+            credentials {
+                username = "${blockv_artifactory_username}"
+                password = "${blockv_artifactory_password}"
+            }
+        }
+    }
 }

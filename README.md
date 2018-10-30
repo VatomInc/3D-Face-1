@@ -8,7 +8,7 @@ First add it to your gradle dependencies:
 
 ``` kotlin
 dependencies {
-    implementation 'io.blockv.faces:face3d:1.0.4'
+    implementation 'io.blockv.faces:face3d:1.0.5'
 }
 ```
 

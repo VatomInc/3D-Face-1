@@ -9,7 +9,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 24
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,7 +34,7 @@ dependencies {
 
 def libraryGroupId = 'io.blockv.faces'
 def libraryArtifactId = 'face3d'
-def libraryVersion = '1.0.4'
+def libraryVersion = '1.0.5'
 
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

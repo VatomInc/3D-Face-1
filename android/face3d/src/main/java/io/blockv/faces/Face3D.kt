@@ -1,4 +1,4 @@
-package io.blockv.face3d
+package io.blockv.faces
 
 import android.graphics.Color
 import android.os.Handler
@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.widget.ImageView
 import io.blockv.common.model.Face
 import io.blockv.common.model.Vatom
 import io.blockv.face.client.FaceBridge

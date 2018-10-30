@@ -5,7 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p"
+    "build": "npm run build-lib && npm run copy-webapp && npm run copy-android",
+    "build-lib": "webpack -p",
+    "copy-webapp": "cpy lib/**/* webapp/",
+    "copy-android": "cpy webapp/**/* android/face3d/src/main/assets/face3drenderer/"
   },
   "keywords": [
     "3d",
@@ -26,6 +29,7 @@
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
     "babel-loader": "^8.0.4",
+    "cpy-cli": "^2.0.0",
     "url-loader": "^1.1.2",
     "webpack": "^4.22.0",
     "webpack-cli": "^3.1.2"

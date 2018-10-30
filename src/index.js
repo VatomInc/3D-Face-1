@@ -46,7 +46,7 @@ module.exports = class Face3D extends BaseFace {
         let resname = this.face.config && this.face.config.placeholder_image || "ActivatedImage"
         let res = this.vatom.properties.resources.find(r => r.name == resname)
         if (res)
-            this.placeholderImg.style.backgroundImage = "url(" + this.vatomView.blockv.UserManager.encodeAssetProvider(res.value.value) + ")"
+            Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(res.value.value)).then(url => this.placeholderImg.style.backgroundImage = "url(" + url + ")")
 
         // Create loader
         this.loader = createThreeDotLoader()

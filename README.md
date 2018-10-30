@@ -2,7 +2,31 @@
 
 This is a face for the Android, iOS and Web BLOCKv SDKs, which allows rendering and interacting with 3D vatoms.
 
-> NOTE: Only Web and iOS supported currently.
+## Usage in the Android SDK
+
+First add it to your gradle dependencies:
+
+``` kotlin
+dependencies {
+    implementation 'io.blockv.face3d:face3d'
+}
+```
+
+Then register it on app startup:
+
+``` kotlin
+// Kotlin
+import io.blockv.face3d.Face3D
+
+blockv.faceManager.registerFace(Face3D.factory)
+```
+
+``` java
+// Java
+import io.blockv.face3d.Face3D;
+
+blockv.getFaceManager().registerFace(Face3D.Companion.getFactory());
+```
 
 ## Usage in the iOS SDK
 
@@ -40,3 +64,11 @@ VatomView.registerFace(Face3D)
 ## Specification
 
 - Display URL: `native://generic-3d`
+
+## Building
+
+To build, run `npm run build`. This results in running these scripts in this order:
+
+- `build-lib` will compile the face code into `dist/Face3D.min.js`
+- `copy-webapp` will copy all the files in `dist/` and put them into `webapp/`. This is the folder containing the wrapper web app the native apps use. The iOS library uses these files directly.
+- `copy-android` copies all files in `webapp/` into the Android project's `assets/` folder. This is because I couldn't get the Android gradle build process to read these files directly.

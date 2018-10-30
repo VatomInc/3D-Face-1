@@ -15,7 +15,7 @@ module.exports.entry = "./src/index.js";
 
 // The final app's JS output file
 module.exports.output = {
-    path: __dirname + "/webapp/",
+    path: __dirname + "/lib/",
     filename: "Face3D.min.js",
     libraryTarget:"var",
     library:"Face3D"

@@ -29,12 +29,12 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "io.blockv.sdk:faceview:1.0.0"
+    implementation "io.blockv.sdk:faceview:3.0.1-alpha.1"
 }
 
 def libraryGroupId = 'io.blockv.faces'
 def libraryArtifactId = 'face3d'
-def libraryVersion = '1.0.5'
+def libraryVersion = '2.0.0'
 
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

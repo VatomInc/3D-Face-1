@@ -11,6 +11,7 @@ import FLAnimatedImage
 import Nuke
 import NVActivityIndicatorView
 import WebKit
+import GenericJSON
 
 public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
     

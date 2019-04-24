@@ -333,7 +333,7 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
     }
     
     /** Called if the WKWebView process crashes */
-    private func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+    public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         
         // Create error
         print("[3D Face] Renderer process has been terminated.")

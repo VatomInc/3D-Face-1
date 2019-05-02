@@ -332,7 +332,7 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
         
     }
     
-    /** Called if the WKWebView process crashes */
+    /// Called if the WKWebView process crashes
     public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         
         // Create error

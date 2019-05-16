@@ -282,9 +282,16 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             // Sign the URL
             guard let signedURL = try? BLOCKv.encodeURL(url) else {
                 
-                // Failed to sign the URL, inform the web app
-                self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to sign the resource URL.\")", completionHandler: nil)
-                print("[3D Face] Unable to sign the resurce URL.")
+                // Back to the main thread
+                DispatchQueue.main.async {
+                
+                    // Failed to sign the URL, inform the web app
+                    self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to sign the resource URL.\")", completionHandler: nil)
+                    print("[3D Face] Unable to sign the resurce URL.")
+                    
+                    
+                }
+                
                 return
                 
             }
@@ -317,9 +324,14 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             // On fail
             task.onFail { error in
                 
-                // Failed to download, inform the web app
-                self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to download the resource. \" + \(JSON.string(error.localizedDescription).jsonString))", completionHandler: nil)
-                print("[3D Face] Unable to download the resurce. " + error.localizedDescription)
+                // Back to the main thread
+                DispatchQueue.main.async {
+                    
+                    // Failed to download, inform the web app
+                    self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to download the resource. \" + \(JSON.string(error.localizedDescription).jsonString))", completionHandler: nil)
+                    print("[3D Face] Unable to download the resurce. " + error.localizedDescription)
+                    
+                }
                 
             }
             
@@ -347,8 +359,15 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
     /** Called by VatomView when the vatom's state changes */
     func vatomStateChanged() {
         
-        // Notify the web view
-        webView?.evaluateJavaScript("vatomStateChanged(\(self.vatom.toJSON.jsonString))", completionHandler: nil)
+        let jsonString = self.vatom.toJSON.jsonString
+        
+        // Back to the main thread
+        DispatchQueue.main.async {
+        
+            // Notify the web view
+            self.webView?.evaluateJavaScript("vatomStateChanged(\(jsonString))", completionHandler: nil)
+            
+        }
         
     }
     

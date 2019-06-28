@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Get our vatom from the native bridge, mapping it to the Web SDK's model
         var vatom = new Vatom(rendererInfo.vatomPayload, [rendererInfo.facePayload], [])
+        vatomView.vatom = vatom
 
         // Create 3D face
         face = new Face3D(vatomView, vatom, rendererInfo.facePayload)

@@ -20,7 +20,7 @@ extension VatomModel {
                 "title": JSON.string(self.props.title),
                 "template": JSON.string(self.props.templateID),
                 "template_variation": JSON.string(self.props.templateVariationID),
-                "cloning_score": JSON.number(Float(self.props.cloningScore)),
+                "cloning_score": JSON.number(self.props.cloningScore),
                 "acquireable": JSON.bool(self.props.isAcquirable),
                 "tradeable": JSON.bool(self.props.isTradeable),
                 "redeemable": JSON.bool(self.props.isRedeemable),

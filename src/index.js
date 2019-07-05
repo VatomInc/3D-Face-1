@@ -98,9 +98,10 @@ module.exports = class Face3D {
         this.controls.enabled = true;
         this.controls.enableZoom = true;
         this.controls.enablePan = true;
-        this.controls.enableDamping = false;
-        this.controls.autoRotate = true;
-        this.controls.autoRotateSpeed = 3;
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.25;
+        this.controls.autoRotate = this.options.autorotate !== false;
+        this.controls.autoRotateSpeed = 0.25;
         this.camera.position.set(0.4, 0, 5);
         this.controls.update()
         this.cameraRotationTarget = new THREE.Vector3()
@@ -128,13 +129,13 @@ module.exports = class Face3D {
         // Prevent gestures from scrolling or zooming the page
         this.canvas.addEventListener("touchstart", e => e.preventDefault())
 
-        this.hammertime = new Hammer(this.canvas)
         // On single tap, notify the animation manager
+        this.hammertime = new Hammer(this.canvas)
         this.hammertime.on("tap", e => {
 
-        // Notify animation manager, if it exists
-        if (this.animation)
-            this.animation.onClick()
+            // Notify animation manager, if it exists
+            if (this.animation)
+                this.animation.onClick()
 
         })
         // The desired camera distance from the center of the scene

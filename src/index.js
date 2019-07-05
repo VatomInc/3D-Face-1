@@ -57,7 +57,7 @@ module.exports = class Face3D {
 
         // Create canvas
         this.canvas = document.createElement("canvas")
-        this.canvas.style.cssText = "width: 100%; height: 100vh; "
+        this.canvas.style.cssText = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; "
         this.element.appendChild(this.canvas)
 
         // Create placeholder image
@@ -82,6 +82,11 @@ module.exports = class Face3D {
             alpha: true,
             antialias: true
         })
+        this.renderer.gammaOutput = true;
+        this.renderer.gammaFactor = 1.7;
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
+        this.renderer.antialias = true;
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
         this.renderer.shadowMapSoft = true;
@@ -122,6 +127,16 @@ module.exports = class Face3D {
 
         // Prevent gestures from scrolling or zooming the page
         this.canvas.addEventListener("touchstart", e => e.preventDefault())
+
+        this.hammertime = new Hammer(this.canvas)
+        // On single tap, notify the animation manager
+        this.hammertime.on("tap", e => {
+
+        // Notify animation manager, if it exists
+        if (this.animation)
+            this.animation.onClick()
+
+        })
         // The desired camera distance from the center of the scene
 
         this.desiredCameraZ = 1
@@ -375,11 +390,7 @@ module.exports = class Face3D {
         this.animation && this.animation.update(delta)
 
         // Do render
-        this.renderer.gammaOutput = true;
-        this.renderer.gammaFactor = 1.7;
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
-        this.renderer.antialias = true;
+        
         this.renderer.render(this.scene, this.camera)
 
 

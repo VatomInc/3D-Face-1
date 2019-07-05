@@ -195,8 +195,8 @@ module.exports = class Face3D {
             spotLight.distance = 2000;
 
             spotLight.castShadow = true;
-            spotLight.shadow.mapSize.width = 2048;
-            spotLight.shadow.mapSize.height = 2048;
+            spotLight.shadow.mapSize.width = 512;
+            spotLight.shadow.mapSize.height = 512;
             spotLight.shadowCameraVisible = true;
             scene.add(spotLight);
 

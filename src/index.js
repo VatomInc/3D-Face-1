@@ -5,7 +5,6 @@ window.THREE = window.THREE || require("three")
 require("./GLTFLoader.js")
 
 // Other imports
-const BaseFace = require('@blockv/sdk/face/faces/BaseFace')
 const createThreeDotLoader = require('./ThreeDotLoader')
 const OrbitControls = require('./orbit-controls')
 const Hammer = require('hammerjs')
@@ -17,7 +16,25 @@ const V3DLoader = require('./V3DLoader')
 // Desired distance of the camera from the scene, in multiples of the scene radius
 const CAMERA_DISTANCE_MULTIPLIER = 1
 
-module.exports = class Face3D extends BaseFace {
+module.exports = class Face3D {
+
+    constructor (vatomView, vatom, face) {
+
+        // Store info
+        this.vatomView = vatomView
+        this.face = face
+
+        // Create element
+        this.element = document.createElement('div')
+        this.element.style.position = 'relative'
+        this.element.style.width = '100%'
+        this.element.style.height = '100%'
+
+    }
+
+    get vatom() {
+        return this.vatomView.vatom
+    }
 
     /** Face URL */
     static get url() {
@@ -305,6 +322,7 @@ module.exports = class Face3D extends BaseFace {
 
         // Remove listeners
         window.removeEventListener('resize', this.onResize)
+        this.hammertime.destroy()
 
     }
 

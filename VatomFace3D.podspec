@@ -22,6 +22,5 @@ Pod::Spec.new do |spec|
     spec.dependency 'Nuke'
     spec.dependency 'FLAnimatedImage'
     spec.dependency 'NVActivityIndicatorView'
-    spec.dependency 'GenericJSON', '~> 2.0'
     
 end

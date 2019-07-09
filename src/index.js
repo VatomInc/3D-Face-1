@@ -84,12 +84,9 @@ module.exports = class Face3D {
         })
         this.renderer.gammaOutput = true;
         this.renderer.gammaFactor = 1.7;
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
         this.renderer.antialias = true;
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
-        this.renderer.shadowMapSoft = true;
 
         // Setup camera
         this.camera = new THREE.PerspectiveCamera(60, this.element.clientWidth / this.element.clientHeight, 0.01, 100)
@@ -165,7 +162,7 @@ module.exports = class Face3D {
         var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
-        this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '').then(resourceURL => 
+        Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
             isGLB 
                 ? this.loadGLTFScene(resourceURL) 
                 : V3DLoader.load(resourceURL).then(scene => ({ scene }))

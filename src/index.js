@@ -97,7 +97,7 @@ module.exports = class Face3D {
         this.controls.enablePan = true;
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.25;
-        this.controls.autoRotate = this.options.autorotate !== false;
+        this.controls.autoRotate = !!this.options.autorotate;
         this.controls.autoRotateSpeed = 0.25;
         this.camera.position.set(0.4, 0, 5);
         this.controls.update()

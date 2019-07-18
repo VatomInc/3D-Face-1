@@ -73,7 +73,7 @@ module.exports = class Face3D {
 
         // Create loader
         this.loader = createThreeDotLoader()
-        this.loader.style.cssText = "position: absolute; pointer-events: none; bottom: 25%; left: calc(50% - 35px); width: 70px; background-color: rgba(255, 255, 255, 0.95); border-radius: 4px; "
+        this.loader.style.cssText = "position: absolute; pointer-events: none; bottom: 84px; left: calc(50% - 50px); width: 100px; background-color: rgba(255, 255, 255, 0.95); border-radius: 4px; font-size:12px "
         this.element.appendChild(this.loader)
 
         // Prepare 3D
@@ -169,12 +169,16 @@ module.exports = class Face3D {
         var scenePromise = isGLB ? this.loadGLTFScene(resourceURL) : V3DLoader.load(resourceURL).then(scene => ({
             scene
         }))
+        
 
         // Load file
         scenePromise.then(({
             scene,
             animations
         }) => {
+            
+
+            
 
             // Hide loader and placeholder image
             if (this.placeholderImg.parentNode) this.placeholderImg.parentNode.removeChild(this.placeholderImg)
@@ -313,17 +317,34 @@ module.exports = class Face3D {
 
     /** @private Called to load a GLTF scene */
     loadGLTFScene(url) {
-
+        let speedDisplay = document.createElement('div')
+        speedDisplay.innerText = 'Speed test in here'
+        speedDisplay.style.cssText = 'width: 300px; height: 300px; background-color: #000; color:#fff; z-index: 2000; margin: 0 auto; position:absolute; bottom: 100px'
+        this.element.append(this.loader)
+        let startTime = Date.now()
+    
         // Return promise
         return new Promise((onSuccess, onFail) => {
-
+            
             // Load scene
             var ldr = new THREE.GLTFLoader()
-            ldr.load(url, onSuccess, null, onFail)
+            ldr.load(url, onSuccess,  (e) => {
+                let kbps = (e.loaded / ((Date.now() - startTime) / 1000) / 1000).toFixed(2)
+                
+                let mbps = (kbps / 1000).toFixed(2)
+                let percent = (e.loaded / e.total) * 100
+                this.loader.style.padding = '2px'
+                this.loader.innerHTML = `Loading: ${Math.floor(percent)}%  <br /> ${(kbps > 999) ? mbps + ' mb/s' : kbps + ' kb/s'}`
+               
+            }, onFail)
+            
+            
 
         })
 
     }
+
+    
 
     /** @private @override Called when the face is removed */
     onUnload() {

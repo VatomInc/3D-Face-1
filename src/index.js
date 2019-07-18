@@ -317,9 +317,8 @@ module.exports = class Face3D {
 
     /** @private Called to load a GLTF scene */
     loadGLTFScene(url) {
-        let speedDisplay = document.createElement('div')
-        speedDisplay.innerText = 'Speed test in here'
-        speedDisplay.style.cssText = 'width: 300px; height: 300px; background-color: #000; color:#fff; z-index: 2000; margin: 0 auto; position:absolute; bottom: 100px'
+        
+        
         this.element.append(this.loader)
         let startTime = Date.now()
     

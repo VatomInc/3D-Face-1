@@ -325,14 +325,19 @@ module.exports = class Face3D {
                   speeds.push(kbps)
                 let mbps = (kbps / 1000).toFixed(2)
                 let percent = (e.loaded / e.total) * 100
+                let total = (e.total / 1000 / 1000).toFixed(2)
                 this.loader.style.padding = '2px'
                 let time = new Date(null)
-                time.setSeconds(Math.abs((Date.now() - startTime) / 1000).toFixed(0))
+                time.setSeconds(Math.abs((Date.now() - startTime) / 1000))
+                
+                let seconds = Math.abs((Date.now() - startTime) / 1000)
+                let timeMilliseconds = Math.floor((seconds % 1) * 1000).toString().padStart(3, '0')
                 let timeSeconds = (time.getSeconds() < 10 ) ? '0'+time.getSeconds() : time.getSeconds()
                 let timeMinutes = (time.getMinutes() < 10 ) ? '0'+time.getMinutes() : time.getMinutes()
+                
                 // add to the loader text
-                this.loader.innerHTML = `Loading: ${Math.floor(percent)}%  <br /> Average: ${(kbps > 999) ? mbps + ' mb/s' : kbps + ' kb/s'} <br /> Total Time: ${timeMinutes+':'+timeSeconds}`
-            
+                this.loader.innerHTML = `Loading: ${Math.floor(percent)}%  of ${total} mb <br /> Average: ${(kbps > 999) ? mbps + ' mb/s' : kbps + ' kb/s'} <br /> Total Time: ${timeMinutes}:${timeSeconds}.${timeMilliseconds}`
+                
             }, onFail)
 
            

@@ -7,28 +7,28 @@ const styles = `
   width: 70px;
   text-align: center;
 }
-.threeddfacespinner > div {
+.threedfacespinner > div {
   width: 12px;
   height: 12px;
   margin: 0px 3px;
   border-radius: 100%;
   display: inline-block;
-  -webkit-animation: threeddface-sk-bouncedelay 1.4s infinite ease-in-out both;
-  animation: threeddface-sk-bouncedelay 1.4s infinite ease-in-out both;
+  -webkit-animation: threedface-sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: threedface-sk-bouncedelay 1.4s infinite ease-in-out both;
 }
-.threeddfacespinner .bounce1 {
+.threedfacespinner .bounce1 {
   -webkit-animation-delay: -0.32s;
   animation-delay: -0.32s;
 }
-.threeddfacespinner .bounce2 {
+.threedfacespinner .bounce2 {
   -webkit-animation-delay: -0.16s;
   animation-delay: -0.16s;
 }
-@-webkit-keyframes threeddface-sk-bouncedelay {
+@-webkit-keyframes threedface-sk-bouncedelay {
   0%, 80%, 100% { -webkit-transform: scale(0) }
   40% { -webkit-transform: scale(1.0) }
 }
-@keyframes threeddface-sk-bouncedelay {
+@keyframes threedface-sk-bouncedelay {
   0%, 80%, 100% {
     -webkit-transform: scale(0);
     transform: scale(0);
@@ -62,7 +62,7 @@ module.exports = function createThreeDotLoader(color = "#333") {
 
     // Create element
     let div = document.createElement("div")
-    div.className = "threeddfacespinner"
+    div.className = "threedfacespinner"
     div.innerHTML = `
         <div class="bounce1" style="background-color: ${color}; "></div>
         <div class="bounce2" style="background-color: ${color}; "></div>

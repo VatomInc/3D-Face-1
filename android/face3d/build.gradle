@@ -32,7 +32,7 @@ dependencies {
     implementation "io.blockv.sdk-alpha:faceview:4.0.0-alpha.23"
 }
 
-def libraryGroupId = 'io.blockv.faces'
+def libraryGroupId = 'io.blockv.faces-alpha'
 def libraryArtifactId = 'face3d'
 def libraryVersion = '2.1.0'
 
@@ -53,7 +53,7 @@ publishing {
     }
     repositories {
         maven {
-            url "https://maven.blockv.io/artifactory/BLOCKv/"
+            url "https://maven.blockv.io/artifactory/Blockv-Debug/"
             credentials {
                 username = "${blockv_artifactory_username}"
                 password = "${blockv_artifactory_password}"

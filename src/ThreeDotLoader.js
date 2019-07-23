@@ -2,33 +2,33 @@
 // This function creates a three-dot loader element, which views can then attach to the dom.
 
 const styles = `
-.3dface-spinner {
+.threedfacespinner {
   margin: 0px auto;
   width: 70px;
   text-align: center;
 }
-.3dface-spinner > div {
+.threeddfacespinner > div {
   width: 12px;
   height: 12px;
   margin: 0px 3px;
   border-radius: 100%;
   display: inline-block;
-  -webkit-animation: 3dface-sk-bouncedelay 1.4s infinite ease-in-out both;
-  animation: 3dface-sk-bouncedelay 1.4s infinite ease-in-out both;
+  -webkit-animation: threeddface-sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: threeddface-sk-bouncedelay 1.4s infinite ease-in-out both;
 }
-.3dface-spinner .bounce1 {
+.threeddfacespinner .bounce1 {
   -webkit-animation-delay: -0.32s;
   animation-delay: -0.32s;
 }
-.3dface-spinner .bounce2 {
+.threeddfacespinner .bounce2 {
   -webkit-animation-delay: -0.16s;
   animation-delay: -0.16s;
 }
-@-webkit-keyframes 3dface-sk-bouncedelay {
+@-webkit-keyframes threeddface-sk-bouncedelay {
   0%, 80%, 100% { -webkit-transform: scale(0) }
   40% { -webkit-transform: scale(1.0) }
 }
-@keyframes 3dface-sk-bouncedelay {
+@keyframes threeddface-sk-bouncedelay {
   0%, 80%, 100% {
     -webkit-transform: scale(0);
     transform: scale(0);
@@ -55,14 +55,14 @@ module.exports = function createThreeDotLoader(color = "#333") {
 
         // Attach styles to document
         stylesElement = document.createElement("style")
-        stylesElement.innerText = styles
+        stylesElement.innerHTML = styles
         document.body.appendChild(stylesElement)
 
     }
 
     // Create element
     let div = document.createElement("div")
-    div.className = "3dface-spinner"
+    div.className = "threeddfacespinner"
     div.innerHTML = `
         <div class="bounce1" style="background-color: ${color}; "></div>
         <div class="bounce2" style="background-color: ${color}; "></div>

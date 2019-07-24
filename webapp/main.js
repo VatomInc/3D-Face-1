@@ -40,10 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         face.element.style.cssText += "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; "
 
         // Call it's onLoad
-        face.onLoad()
-
-        // Wait for the load to complete
-        return face.whenLoadComplete
+        return face.onLoad()
 
     }).then(function() {
 

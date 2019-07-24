@@ -6,9 +6,15 @@
 //
 
 import Foundation
+import BLOCKv
+import Nuke
+
+//TODO: Add recource download cancellation when 3d face is disengaged.
 
 /// Provides utilities for downloading resources
 public class ResourceDownloader {
+    
+    static let dataCache = try? DataCache.init(name: "io.viewer.face.generic-3d")
     
     /// Currently running downloads
     internal static var currentDownloads : [ResourceDownloader] = []
@@ -58,43 +64,73 @@ public class ResourceDownloader {
         // Store URL
         self.url = url
         
-        // Create request which prioritizes the cache
-        let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 30)
+        print("[3DFace] [Resource Downloader] Face requested data for: \(url.absoluteString.prefix(140))")
         
-        // Begin download
-        URLSession.shared.dataTask(with: request) { (data, response, error) in
+        // Check cache for data
+        if let data = ResourceDownloader.dataCache?.cachedData(for: url.absoluteString) {
+
+            print("[3DFace] [Resource Downloader] Found cache data: \(data)")
             
             // Done, mark as so
             self.isDownloading = false
-            self.error = error
+            self.error = nil
             self.data = data
             
-            // Check for error
-            if let err = error {
-                
-                // Notify failed
-                for callback in self.callbacksOnFail {
-                    callback(err)
-                }
-                
-            } else if let data = data {
-                
-                // Notify completed
-                for callback in self.callbacksOnCompleted {
-                    callback(data)
-                }
-                
+            for callback in self.callbacksOnCompleted {
+                callback(data)
             }
             
             // Remove callbacks
             self.callbacksOnCompleted = []
             self.callbacksOnFail = []
+
+        } else {
             
-            // Remove us from the list of currently running tasks
-            ResourceDownloader.currentDownloads = ResourceDownloader.currentDownloads.filter { $0 !== self }
+            print("[3DFace] [Resource Downloader] Downloading: \(url.absoluteString.prefix(140))")
+
+            // Create request which prioritizes the cache
+            let request = URLRequest(url: url, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: 30)
             
-        }.resume()
-        
+            // Begin download
+            URLSession.shared.dataTask(with: request) { [weak self] (data, response, error) in
+                
+                guard let self = self else { return }
+                
+                // Done, mark as so
+                self.isDownloading = false
+                self.error = error
+                self.data = data
+                
+                // Check for error
+                if let err = error {
+                    
+                    // Notify failed
+                    for callback in self.callbacksOnFail {
+                        callback(err)
+                    }
+                    
+                } else if let data = data {
+                    
+                    // Store data (async but returns syncrhonously)
+                    ResourceDownloader.dataCache?.storeData(data, for: url.absoluteString)
+                    
+                    // Notify completed
+                    for callback in self.callbacksOnCompleted {
+                        callback(data)
+                    }
+                    
+                }
+                
+                // Remove callbacks
+                self.callbacksOnCompleted = []
+                self.callbacksOnFail = []
+                
+                // Remove us from the list of currently running tasks
+                ResourceDownloader.currentDownloads = ResourceDownloader.currentDownloads.filter { $0 !== self }
+                
+                }.resume()
+        }
+    
     }
     
     // Add a callback for when the download is complete

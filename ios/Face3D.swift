@@ -301,38 +301,35 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             let task = ResourceDownloader.download(url: signedURL)
             
             // On success
-            task.onComplete { data in
+            task.onComplete { result in
                 
-                // Download complete, move to background thread
-                DispatchQueue.global(qos: .userInitiated).async {
-                    
-                    // Convert data to Data URI
-                    let dataURI = data.toDataURI()
-                    
+                switch result {
+                case .success(let data):
+                    // Download complete, move to background thread
+                    DispatchQueue.global(qos: .userInteractive).async {
+                        
+                        // Convert data to Data URI
+                        let dataURI = data.toDataURI()
+                        
+                        // Back to the main thread
+                        DispatchQueue.main.async {
+                            
+                            // Send final URL to the web app
+                            self.webView?.evaluateJavaScript("signURLComplete(\(JSON.string(id).jsonString), \"\(dataURI)\")", completionHandler: nil)
+                            
+                        }
+                        
+                    }
+                case .failure(let error):
                     // Back to the main thread
                     DispatchQueue.main.async {
-                    
-                        // Send final URL to the web app
-                        self.webView?.evaluateJavaScript("signURLComplete(\(JSON.string(id).jsonString), \"\(dataURI)\")", completionHandler: nil)
-                    
+                        
+                        // Failed to download, inform the web app
+                        self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to download the resource. \" + \(JSON.string(error.localizedDescription).jsonString))", completionHandler: nil)
+                        print("[3D Face] Unable to download the resurce. " + error.localizedDescription)
+                        
                     }
-                    
                 }
-                
-            }
-            
-            // On fail
-            task.onFail { error in
-                
-                // Back to the main thread
-                DispatchQueue.main.async {
-                    
-                    // Failed to download, inform the web app
-                    self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to download the resource. \" + \(JSON.string(error.localizedDescription).jsonString))", completionHandler: nil)
-                    print("[3D Face] Unable to download the resurce. " + error.localizedDescription)
-                    
-                }
-                
             }
             
         } else {

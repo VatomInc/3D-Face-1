@@ -170,9 +170,9 @@ module.exports = class Face3D {
 
             // Hide loader and placeholder image
             if (this.placeholderImg.parentNode) this.placeholderImg.parentNode.removeChild(this.placeholderImg)
-            if (this.loader.parentNode) {
-                setTimeout(() => {this.loader.parentNode.removeChild(this.loader)}, 5000)
-            }
+            // if (this.loader.parentNode) {
+            //     setTimeout(() => {this.loader.parentNode.removeChild(this.loader)}, 5000)
+            // }
             
             // Display scene
             this.scene = scene

@@ -80,11 +80,10 @@ module.exports = class Face3D {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             alpha: true,
-            antialias: true
+            antialias: window.devicePixelRatio == 1
         })
         this.renderer.gammaOutput = true;
         this.renderer.gammaFactor = 1.7;
-        this.renderer.antialias = true;
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
 
@@ -275,7 +274,7 @@ module.exports = class Face3D {
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload)
 
-        })
+        }).then ( e => { this.render() })
 
     }
 

@@ -54,15 +54,12 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
         
         // create directories if needed
         try? FileManager.default.createDirectory(at: faceCacheDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        print("content:", try? FileManager.default.contentsOfDirectory(at: faceCacheDirectoryURL, includingPropertiesForKeys: nil, options: []))
         // remove any existing generic-3d related files
         try? FileManager.default.removeFiles(in: faceCacheDirectoryURL, occuringIn: Face3D.baseURL)
-        print("content:", try? FileManager.default.contentsOfDirectory(at: faceCacheDirectoryURL, includingPropertiesForKeys: nil, options: []))
 
         do {
             // copy generic-3d files into cache directory
             try FileManager.default.copyContents(in: Face3D.baseURL, to: faceCacheDirectoryURL)
-            print("content:", try? FileManager.default.contentsOfDirectory(at: faceCacheDirectoryURL, includingPropertiesForKeys: nil, options: []))
         } catch {
             print("[3DFace] file error: \(error)")
         }
@@ -354,7 +351,7 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             }
             
             /// Download data
-            DataPipeline.shared.downloadData(url: signedURL, destination: DataDownloader.suggestedDownloadDestination(), progress: { progress in
+            DataPipeline.shared.downloadData(url: signedURL, progress: { progress in
                 print("[3D Face] Download progress: \(progress)")
 
             }) { result in

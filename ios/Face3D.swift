@@ -28,7 +28,6 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
     var loadingView : UIView!
     var webView : WKWebView?
     
-    
     /*
      - Since this is in the cache directory, do I need to make provision for the system sweeping?
      - Defining and creating the resources directory should be a part of the face module. All the generic-3d face should
@@ -41,30 +40,32 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
      
      face_data
      |- index.html
+     |- main.js
      |- ...
      |- resources/
      */
     
-    /// Temporary directory when both the web source files and the vatom resources are placed.
+    // temporary directory when both the web source files and the vatom resources are placed.
     let cacheDirectoryURL = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-    
     lazy var faceCacheDirectoryURL = cacheDirectoryURL.appendingPathComponent("face_data")
-    lazy var resourcesCacheDirectory = faceCacheDirectoryURL.appendingPathComponent("resources")
     
     public required init(vatom: VatomModel, faceModel: FaceModel) {
         super.init(vatom: vatom, faceModel: faceModel)
         
-        try? FileManager.default.removeItem(at: faceCacheDirectoryURL)
-        
+        // create directories if needed
+        try? FileManager.default.createDirectory(at: faceCacheDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        print("content:", try? FileManager.default.contentsOfDirectory(at: faceCacheDirectoryURL, includingPropertiesForKeys: nil, options: []))
+        // remove any existing generic-3d related files
+        try? FileManager.default.removeFiles(in: faceCacheDirectoryURL, occuringIn: Face3D.baseURL)
+        print("content:", try? FileManager.default.contentsOfDirectory(at: faceCacheDirectoryURL, includingPropertiesForKeys: nil, options: []))
+
         do {
-            // this is the directory to hold the copy of the source files
-            let result = try FileManager.default.copyItem(at: Face3D.baseURL, to: faceCacheDirectoryURL)
+            // copy generic-3d files into cache directory
+            try FileManager.default.copyContents(in: Face3D.baseURL, to: faceCacheDirectoryURL)
+            print("content:", try? FileManager.default.contentsOfDirectory(at: faceCacheDirectoryURL, includingPropertiesForKeys: nil, options: []))
         } catch {
             print("[3DFace] file error: \(error)")
         }
-        
-        // try and create a resources directory
-        try? FileManager.default.createDirectory(at: resourcesCacheDirectory, withIntermediateDirectories: true, attributes: nil)
         
     }
     
@@ -352,54 +353,36 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
                 
             }
             
-            BVDataLoader.default.download(url: signedURL, directory: resourcesCacheDirectory) { fileURL in
-                
-                // Back to the main thread
-                DispatchQueue.main.async {
-                    // Send final URL to the web app
-                    print("[3D Face] Received file url: \(fileURL.path)")
-                    self.webView?.evaluateJavaScript("signURLComplete(\(JSON.string(id).jsonString), \"\(fileURL)\")", completionHandler: nil)
+            /// Download data
+            DataPipeline.shared.downloadData(url: signedURL, destination: DataDownloader.suggestedDownloadDestination(), progress: { progress in
+                print("[3D Face] Download progress: \(progress)")
+
+            }) { result in
+
+                switch result {
+                case .success(let url):
+                    DispatchQueue.main.async {
+
+                        print("resource content:", try? FileManager.default.contentsOfDirectory(at: self.faceCacheDirectoryURL.appendingPathComponent("resources"), includingPropertiesForKeys: nil, options: []))
+
+
+                        // send final URL to the web app
+                        print("[3D Face] Received file url: \(url)")
+                        self.webView?.evaluateJavaScript("signURLComplete(\(JSON.string(id).jsonString), \"\(url)\")", completionHandler: nil)
+                    }
+
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        // failed to download, inform the web app
+                        self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to download the resource. \" + \(JSON.string(error.localizedDescription).jsonString))", completionHandler: nil)
+                        print("[3D Face] Unable to download the resurce. " + error.localizedDescription)
+
+                    }
                 }
-                
+
             }
+            
             return
-            
-            
-//            // Download the resource. We're sending back a data URI to the web app instead of just the signed URL, because the BLOCKv CDN has a config error in which
-//            // the CORS headers are not sent when the Origin is `null`, as is the case when the web app is running locally from a file instead of an http: URL.
-//            let task = ResourceDownloader.download(url: signedURL)
-//
-//            // On success
-//            task.onComplete { result in
-//
-//                switch result {
-//                case .success(let data):
-//                    // Download complete, move to background thread
-//                    DispatchQueue.global(qos: .userInteractive).async {
-//
-//                        // Convert data to Data URI
-//                        let dataURI = data.toDataURI()
-//
-//                        // Back to the main thread
-//                        DispatchQueue.main.async {
-//
-//                            // Send final URL to the web app
-//                            self.webView?.evaluateJavaScript("signURLComplete(\(JSON.string(id).jsonString), \"\(dataURI)\")", completionHandler: nil)
-//
-//                        }
-//
-//                    }
-//                case .failure(let error):
-//                    // Back to the main thread
-//                    DispatchQueue.main.async {
-//
-//                        // Failed to download, inform the web app
-//                        self.webView?.evaluateJavaScript("signURLFailed(\(JSON.string(id).jsonString), \"Unable to download the resource. \" + \(JSON.string(error.localizedDescription).jsonString))", completionHandler: nil)
-//                        print("[3D Face] Unable to download the resurce. " + error.localizedDescription)
-//
-//                    }
-//                }
-//            }
             
         } else {
             

@@ -352,17 +352,12 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             
             /// Download data
             DataPipeline.shared.downloadData(url: signedURL, progress: { progress in
-                print("[3D Face] Download progress: \(progress)")
-
+                // no-op
             }) { result in
 
                 switch result {
                 case .success(let url):
                     DispatchQueue.main.async {
-
-                        print("resource content:", try? FileManager.default.contentsOfDirectory(at: self.faceCacheDirectoryURL.appendingPathComponent("resources"), includingPropertiesForKeys: nil, options: []))
-
-
                         // send final URL to the web app
                         print("[3D Face] Received file url: \(url)")
                         self.webView?.evaluateJavaScript("signURLComplete(\(JSON.string(id).jsonString), \"\(url)\")", completionHandler: nil)

@@ -300,7 +300,7 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             print("[3D Face] Load complete triggered")
             
             // Transition from icon view to scene view
-            UIView.animate(withDuration: 0.2) {
+            UIView.animate(withDuration: 0.35) {
                 
                 // Fade scene view in
                 self.webView?.alpha = 1

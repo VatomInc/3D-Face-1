@@ -254,7 +254,7 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
         self.webView?.alpha = 0
         self.webView?.isOpaque = false
         self.webView?.navigationDelegate = self
-        self.insertSubview(self.webView!, at: 0)
+        self.addSubview(webView!)
         
         // Prevent web view from adding insets to the view
         if #available(iOS 11.0, *) {
@@ -300,20 +300,14 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
             print("[3D Face] Load complete triggered")
             
             // Transition from icon view to scene view
-            UIView.animate(withDuration: 0.2, animations: {
+            UIView.animate(withDuration: 0.35) {
                 
                 // Fade scene view in
                 self.webView?.alpha = 1
+                self.imageView.alpha = 0
+                self.loadingView.alpha = 0
                 
-            }, completion: { _ in
-                
-                // Fade overlay view out
-                UIView.animate(withDuration: 0.2, animations: {
-                    self.imageView.alpha = 0
-                    self.loadingView.alpha = 0
-                })
-                
-            })
+            }
             
         } else if action == "loadfail" {
             

@@ -123,10 +123,14 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
         }
         
         // Load image
-        Nuke.loadImage(with: encodedURL, into: imageView) { _, error in
-            
+        Nuke.loadImage(with: encodedURL, into: imageView) { result in
             // Placeholder image loaded, display the view
-            completion?(error)
+            do {
+                try result.get()
+                completion?(nil)
+            } catch {
+                completion?(error)
+            }
             
         }
         

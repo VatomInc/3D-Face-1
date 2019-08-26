@@ -18,9 +18,7 @@ Pod::Spec.new do |spec|
     spec.framework = 'WebKit'
 
     # Dependencies
-    spec.dependency 'BLOCKv/Face'
-    spec.dependency 'Nuke'
-    spec.dependency 'FLAnimatedImage'
+    spec.dependency 'BLOCKv'
     spec.dependency 'NVActivityIndicatorView'
     
 end

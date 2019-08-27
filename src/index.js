@@ -80,16 +80,12 @@ module.exports = class Face3D {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             alpha: true,
-            antialias: true
+            antialias: window.devicePixelRatio == 1
         })
         this.renderer.gammaOutput = true;
         this.renderer.gammaFactor = 1.7;
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMapType = THREE.PCFSoftShadowMap;
-        this.renderer.antialias = true;
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
-        this.renderer.shadowMapSoft = true;
 
         // Setup camera
         this.camera = new THREE.PerspectiveCamera(60, this.element.clientWidth / this.element.clientHeight, 0.01, 100)
@@ -100,7 +96,7 @@ module.exports = class Face3D {
         this.controls.enablePan = true;
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.25;
-        this.controls.autoRotate = this.options.autorotate !== false;
+        this.controls.autoRotate = !!this.options.autorotate;
         this.controls.autoRotateSpeed = 0.25;
         this.camera.position.set(0.4, 0, 5);
         this.controls.update()
@@ -162,19 +158,14 @@ module.exports = class Face3D {
             return Promise.reject(new Error("No scene resource found"))
 
         // Check if got a GLB resource
-        var resourceURL = this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')
-        var isGLB = resourceURL.toLowerCase().indexOf(".v3d") == -1
+        var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
-        var scenePromise = isGLB ? this.loadGLTFScene(resourceURL) : V3DLoader.load(resourceURL).then(scene => ({
-            scene
-        }))
-
-        // Load file
-        scenePromise.then(({
-            scene,
-            animations
-        }) => {
+        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
+            isGLB 
+                ? this.loadGLTFScene(resourceURL) 
+                : V3DLoader.load(resourceURL).then(scene => ({ scene }))
+        ).then(({ scene, animations }) => {
 
             // Hide loader and placeholder image
             if (this.placeholderImg.parentNode) this.placeholderImg.parentNode.removeChild(this.placeholderImg)
@@ -283,7 +274,7 @@ module.exports = class Face3D {
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload)
 
-        })
+        }).then ( e => { this.render() })
 
     }
 

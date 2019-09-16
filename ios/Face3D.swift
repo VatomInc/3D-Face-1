@@ -49,20 +49,15 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
     let cacheDirectoryURL = try! FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
     lazy var faceCacheDirectoryURL = cacheDirectoryURL.appendingPathComponent("face_data")
     
-    public required init(vatom: VatomModel, faceModel: FaceModel) {
-        super.init(vatom: vatom, faceModel: faceModel)
-        
-        // create directories if needed
-        try? FileManager.default.createDirectory(at: faceCacheDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        // remove any existing generic-3d related files
-        try? FileManager.default.removeFiles(in: faceCacheDirectoryURL, occuringIn: Face3D.baseURL)
+    public required init(vatom: VatomModel, faceModel: FaceModel) throws {
+        try super.init(vatom: vatom, faceModel: faceModel)
 
-        do {
-            // copy generic-3d files into cache directory
-            try FileManager.default.copyContents(in: Face3D.baseURL, to: faceCacheDirectoryURL)
-        } catch {
-            print("[3DFace] file error: \(error)")
-        }
+        // create directories if needed
+        try FileManager.default.createDirectory(at: faceCacheDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        // remove any existing generic-3d related files
+        try FileManager.default.removeFiles(in: faceCacheDirectoryURL, occuringIn: Face3D.baseURL)
+        // copy generic-3d files into cache directory
+        try FileManager.default.copyContents(in: Face3D.baseURL, to: faceCacheDirectoryURL)
         
     }
     

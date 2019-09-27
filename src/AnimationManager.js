@@ -135,7 +135,7 @@ module.exports = class AnimationManager {
                 continue
 
             // Get key path
-            let keyPath = rule.target.split(".")
+            let keyPath = rule.target.split(/\.(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(k => k.replace(/"/g, ''))
 
             // Follow key path and get the value
             let keyValue = newState

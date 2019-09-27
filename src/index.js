@@ -50,7 +50,7 @@ module.exports = class Face3D {
     onLoad() {
 
         // Store options
-        this.options = this.face.config || this.vatom.private || {}
+        this.options = this.face.properties.config || this.vatom.private || {}
 
         // Create clock to measure delta between frames
         this.clock = new THREE.Clock()

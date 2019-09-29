@@ -195,6 +195,11 @@ class Face3D(vatom: Vatom, face: Face, bridge: FaceBridge) : FaceView(vatom, fac
 
     }
 
+    override fun onUnload() {
+        super.onUnload()
+        webView?.loadUrl("about:blank")
+    }
+
     /** Returns the vAtom payload */
     private fun getVatomPayload(vatom: Vatom): JSONObject {
 

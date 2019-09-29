@@ -48,6 +48,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeBridge)
             window.webkit.messageHandlers.nativeBridge.postMessage({ action: "load" })
 
+        // Notify Android host that load is complete
+        if (typeof nativeBridge != 'undefined' && nativeBridge.loadComplete)
+            nativeBridge.loadComplete()
+
     }).catch(function(err) {
 
         // Load failed
@@ -57,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeBridge)
             window.webkit.messageHandlers.nativeBridge.postMessage({ action: "loadfail", text: err.message })
 
+        // Notify Android host that the load failed
+        if (typeof nativeBridge != 'undefined' && nativeBridge.loadFailed)
+            nativeBridge.loadFailed(err.message)
     })
 
 })

@@ -51,6 +51,8 @@ class Face3D(vatom: Vatom, face: Face, bridge: FaceBridge) : FaceView(vatom, fac
     /** True if the web view has loaded */
     private var isWebViewLoaded = false
 
+    private var loadHandler: LoadHandler? = null
+
     /** Called by VatomView to create and return our UI views */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
 
@@ -161,12 +163,9 @@ class Face3D(vatom: Vatom, face: Face, bridge: FaceBridge) : FaceView(vatom, fac
     /** Called by VatomView when resources should start loading */
     override fun onLoad(handler: LoadHandler) {
 
+        loadHandler = handler
         // Start loading if on screen
         loadIfNeeded()
-
-        // Done
-        handler.onComplete()
-
     }
 
     /** Called once the web view is on-screen, and VatomView has called our onLoad() */
@@ -303,4 +302,15 @@ class Face3D(vatom: Vatom, face: Face, bridge: FaceBridge) : FaceView(vatom, fac
 
     }
 
+    @JavascriptInterface
+    fun loadComplete() {
+        loadHandler?.onComplete()
+        loadHandler = null
+    }
+
+    @JavascriptInterface
+    fun loadFailed(message: String?) {
+        loadHandler?.onError(Exception(message ?: "An exception occurred"))
+        loadHandler = null
+    }
 }

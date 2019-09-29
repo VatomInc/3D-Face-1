@@ -93,7 +93,7 @@ module.exports = class Face3D {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.controls.enabled = true;
         this.controls.enableZoom = true;
-        this.controls.enablePan = true;
+        this.controls.enablePan = false;
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.25;
         this.controls.autoRotate = !!this.options.autorotate;
@@ -161,9 +161,9 @@ module.exports = class Face3D {
         var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
-        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
-            isGLB 
-                ? this.loadGLTFScene(resourceURL) 
+        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL =>
+            isGLB
+                ? this.loadGLTFScene(resourceURL)
                 : V3DLoader.load(resourceURL).then(scene => ({ scene }))
         ).then(({ scene, animations }) => {
 
@@ -382,7 +382,7 @@ module.exports = class Face3D {
         this.animation && this.animation.update(delta)
 
         // Do render
-        
+
         this.renderer.render(this.scene, this.camera)
 
 

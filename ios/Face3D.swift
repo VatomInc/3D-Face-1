@@ -160,6 +160,20 @@ public class Face3D : FaceView, WKScriptMessageHandler, WKNavigationDelegate {
         
         // TODO: Check if vatom ID changed
         
+        // encode response
+        guard
+            let data = try? JSONEncoder.blockv.encode(vatom),
+            let jsonString = String.init(data: data, encoding: .utf8) else {
+                // handle error
+                print("[3D Face] Error: Unable to encode vatom.")
+                return
+        }
+        
+        DispatchQueue.main.async {
+            let controlString = "vatomStateChanged(\(jsonString))"
+            self.webView?.evaluateJavaScript(controlString, completionHandler: nil)
+        }
+        
     }
     
     /// Called when the face is unloaded

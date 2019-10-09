@@ -367,6 +367,26 @@ module.exports = class Face3D {
         if (!this.canvas)
             return
 
+        if (Number.isNaN(this.camera.position.x)) {
+            console.error("something went wrong")
+            //re create the camera and controls
+            this.cameraContainer.remove(this.camera)
+            this.camera = new THREE.PerspectiveCamera(60, this.element.clientWidth / this.element.clientHeight, 0.01, 100)
+
+            this.controls.dispose();
+            this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+            this.controls.enabled = true;
+            this.controls.enableZoom = true;
+            this.controls.enablePan = false;
+            this.controls.enableDamping = true;
+            this.controls.dampingFactor = 0.25;
+            this.controls.autoRotate = !!this.options.autorotate;
+            this.controls.autoRotateSpeed = 0.25;
+            this.camera.position.set(0.4, 0, 5);
+            this.resetCamera()
+            this.onResize()
+        }
+
         // Do again soon
         requestAnimationFrame(this.render)
         this.controls.update()

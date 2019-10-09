@@ -372,7 +372,7 @@ module.exports = class Face3D {
             //re create the camera and controls
             this.cameraContainer.remove(this.camera)
             this.camera = new THREE.PerspectiveCamera(60, this.element.clientWidth / this.element.clientHeight, 0.01, 100)
-
+            this.cameraContainer.add(this.camera)
             this.controls.dispose();
             this.controls = new OrbitControls(this.camera, this.renderer.domElement)
             this.controls.enabled = true;

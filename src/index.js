@@ -104,6 +104,9 @@ module.exports = class Face3D {
         this.cameraContainer = new THREE.Object3D()
         this.cameraContainer.add(this.camera)
 
+        // Setup audio listener
+        this.audioListener = new THREE.AudioListener()
+        this.camera.add(this.audioListener)
 
         // Add light to camera
         this.cameraLight = new THREE.PointLight(0xffffff, 1, 0, 2)
@@ -189,7 +192,6 @@ module.exports = class Face3D {
             spotLight.castShadow = true;
             spotLight.shadow.mapSize.width = 512;
             spotLight.shadow.mapSize.height = 512;
-            spotLight.shadowCameraVisible = true;
             scene.add(spotLight);
 
             spotLight.target.position.set(100, 100, -100);
@@ -272,7 +274,8 @@ module.exports = class Face3D {
             })
 
             // Create animation manager
-            this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload)
+            this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload, this.audioListener)
+            this.animation.requestingResourceURL = name => this.vatomView.blockv.UserManager.encodeAssetProvider(this.vatom.properties.resources.find(r => r.name == name).value.value)
 
         }).then ( e => { this.render() })
 

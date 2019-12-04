@@ -161,15 +161,9 @@ module.exports = class Face3D {
         var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
-<<<<<<< HEAD
         Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL =>
             isGLB
                 ? this.loadGLTFScene(resourceURL)
-=======
-        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
-            isGLB 
-                ? this.loadGLTFScene(resourceURL) 
->>>>>>> dev
                 : V3DLoader.load(resourceURL).then(scene => ({ scene }))
         ).then(async ({ scene, animations }) => {
             // Fade out animation for activated image
@@ -285,7 +279,7 @@ module.exports = class Face3D {
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload)
 
-        }).then ( e => { this.render() })
+        }).then(e => { this.render() })
 
     }
 

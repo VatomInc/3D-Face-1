@@ -50,7 +50,7 @@ module.exports = class Face3D {
     onLoad() {
 
         // Store options
-        this.options = this.face.config || this.vatom.private || {}
+        this.options = this.face.properties.config || this.vatom.private || {}
 
         // Create clock to measure delta between frames
         this.clock = new THREE.Clock()
@@ -80,11 +80,10 @@ module.exports = class Face3D {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             alpha: true,
-            antialias: true
+            antialias: window.devicePixelRatio == 1
         })
         this.renderer.gammaOutput = true;
         this.renderer.gammaFactor = 1.7;
-        this.renderer.antialias = true;
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
 
@@ -162,9 +161,15 @@ module.exports = class Face3D {
         var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
+<<<<<<< HEAD
         Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL =>
             isGLB
                 ? this.loadGLTFScene(resourceURL)
+=======
+        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
+            isGLB 
+                ? this.loadGLTFScene(resourceURL) 
+>>>>>>> dev
                 : V3DLoader.load(resourceURL).then(scene => ({ scene }))
         ).then(async ({ scene, animations }) => {
             // Fade out animation for activated image
@@ -280,7 +285,7 @@ module.exports = class Face3D {
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload)
 
-        })
+        }).then ( e => { this.render() })
 
     }
 

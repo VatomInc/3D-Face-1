@@ -34,7 +34,7 @@ dependencies {
 
 def libraryGroupId = 'io.blockv.faces-alpha'
 def libraryArtifactId = 'face3d'
-def libraryVersion = '2.1.0'
+def libraryVersion = '2.1.1'
 
 task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

@@ -161,7 +161,7 @@ module.exports = class Face3D {
         var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
-        Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL =>
+        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL =>
             isGLB
                 ? this.loadGLTFScene(resourceURL)
                 : V3DLoader.load(resourceURL).then(scene => ({ scene }))

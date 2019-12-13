@@ -6,7 +6,7 @@ require("./GLTFLoader.js")
 
 // Other imports
 const createThreeDotLoader = require('./ThreeDotLoader')
-const OrbitControls = require('./orbit-controls')
+const OrbitControls = require('./OrbitControls')
 const Hammer = require('hammerjs')
 const AnimationManager = require('./AnimationManager')
 const V3DLoader = require('./V3DLoader')
@@ -57,7 +57,7 @@ module.exports = class Face3D {
 
         // Create canvas
         this.canvas = document.createElement("canvas")
-        this.canvas.style.cssText = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; "
+        this.canvas.style.cssText = "position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; outline: none; "
         this.element.appendChild(this.canvas)
 
         // Create placeholder image
@@ -87,9 +87,8 @@ module.exports = class Face3D {
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
 
-        // Setup camera
+        // Setup camera and orbit controls
         this.camera = new THREE.PerspectiveCamera(60, this.element.clientWidth / this.element.clientHeight, 0.01, 100)
-
         this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.controls.enabled = true;
         this.controls.enableZoom = true;
@@ -98,11 +97,7 @@ module.exports = class Face3D {
         this.controls.dampingFactor = 0.25;
         this.controls.autoRotate = !!this.options.autorotate;
         this.controls.autoRotateSpeed = 0.25;
-        this.camera.position.set(0.4, 0, 5);
         this.controls.update()
-        this.cameraRotationTarget = new THREE.Vector3()
-        this.cameraContainer = new THREE.Object3D()
-        this.cameraContainer.add(this.camera)
 
         // Setup audio listener
         this.audioListener = new THREE.AudioListener()
@@ -137,9 +132,6 @@ module.exports = class Face3D {
                 this.animation.onClick()
 
         })
-        // The desired camera distance from the center of the scene
-
-        this.desiredCameraZ = 1
 
         // Get resource specified in the face config
         let resource = this.vatom.properties.resources.find(r => r.name == this.options.scene)
@@ -176,8 +168,23 @@ module.exports = class Face3D {
 
             // Display scene
             this.scene = scene
+            this.scene.add(this.camera)
 
-            scene.background = '0xFFFFFF';
+            // Calculate the center and radius of the scene (code from https://github.com/mrdoob/three.js/issues/1493)
+            var box = new THREE.Box3().setFromObject(this.scene)
+            this.sceneBSRadius = Math.sqrt(Math.pow((box.max.x - box.min.x), 2) + Math.pow((box.max.z - box.min.z), 2) + Math.pow((box.max.y - box.min.y), 2))
+
+            // Move orbit control target to be the center of the model
+            box.getCenter(this.controls.target)
+            box.getCenter(this.camera.position)
+
+            // Set camera's near and far values, to prevent artefacts
+            this.camera.near = this.sceneBSRadius * 0.1
+            this.camera.far = this.sceneBSRadius * 10
+
+            // Set camera distance
+            this.camera.position.z = this.sceneBSRadius * CAMERA_DISTANCE_MULTIPLIER * (this.options.zoom || 1)
+            this.camera.updateProjectionMatrix()
 
             var light = new THREE.AmbientLight(0x768b97); // soft white light
             scene.add(light);
@@ -200,39 +207,6 @@ module.exports = class Face3D {
             spotLight.shadow.camera.far = 600;
 
             scene.add(spotLight.target);
-
-            // var planeMaterial = new THREE.MeshPhongMaterial({
-            // color: 0xff0000
-            // })
-            // planeMaterial.opacity = 1;
-
-
-            // var planeTexture = new THREE.MeshLambertMaterial( { map: texture } )
-
-            // let plane = new THREE.Mesh(new THREE.PlaneGeometry( 300, 300 ), planeTexture);
-            // plane.rotation.x -= Math.PI/2;
-            // plane.position.z = 0;
-            // plane.receiveShadow = true;
-            // plane.castShadow = false;
-            // scene.add(plane);
-
-            // var shadowmaterial = new THREE.ShadowMaterial();
-            // shadowmaterial.opacity = 0.2;
-
-            // let terrain = new THREE.Mesh(
-            // new THREE.PlaneGeometry(100, 100), shadowmaterial);
-            // //terrain.castShadow = true;
-            // terrain.receiveShadow = true;
-            // terrain.position.set(0, -2, 0);
-            // terrain.rotation.set(-Math.PI /2, 0, 0);
-            // scene.add(terrain);
-
-
-            // Add camera to scene
-            this.scene.add(this.cameraContainer)
-
-            // Reset camera position
-            this.resetCamera()
 
             // Reset viewport just in case it changed while we were loading
             this.onResize()
@@ -350,8 +324,7 @@ module.exports = class Face3D {
         this.renderer.setSize(rect.width, rect.height, false)
         this.camera.aspect = rect.width / rect.height
         this.camera.updateProjectionMatrix()
-        this.camera.position.z = this.sceneBSRadius * CAMERA_DISTANCE_MULTIPLIER * (this.options.zoom || 1) //* Math.max(this.element.clientWidth / this.element.clientHeight, this.element.clientHeight / this.element.clientWidth);
-        this.controls.update()
+
     }
 
     /** @private @override Called when the vatom's state changes */
@@ -385,37 +358,12 @@ module.exports = class Face3D {
         this.animation && this.animation.update(delta)
 
         // Do render
-        
         this.renderer.render(this.scene, this.camera)
 
 
         // Do autorotate if requested
-        if (this.options.autorotate)
-            this.cameraRotationTarget.y += 0.05 * delta
-
-    }
-
-    /** @private Moves the camera to the best distance to view the whole scene */
-    resetCamera() {
-
-        // Stop if no scene
-        if (!this.scene || !this.camera)
-            return
-
-        // Calculate the center and radius of the scene (code from https://github.com/mrdoob/three.js/issues/1493)
-        var box = new THREE.Box3().setFromObject(this.scene)
-        this.sceneBSRadius = Math.sqrt(Math.pow((box.max.x - box.min.x), 2) + Math.pow((box.max.z - box.min.z), 2) + Math.pow((box.max.y - box.min.y), 2))
-
-        // Move camera container to be at the center of the scene
-        box.center(this.cameraContainer.position)
-
-        // Move camera
-        this.desiredCameraZ = this.sceneBSRadius * CAMERA_DISTANCE_MULTIPLIER
-
-        // Set camera's near and far values, to prevent artefacts
-        this.camera.near = this.sceneBSRadius * 0.1
-        this.camera.far = this.sceneBSRadius * 10
-        this.camera.updateProjectionMatrix()
+        // if (this.options.autorotate)
+        //     this.cameraRotationTarget.y += 0.05 * delta
 
     }
 

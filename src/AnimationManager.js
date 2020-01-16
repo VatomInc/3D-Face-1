@@ -235,7 +235,6 @@ module.exports = class AnimationManager {
     onClick() {
 
         // Fetch click events
-        let executedClickEvent = false
         let currentAnimation = this.currentAnimation
         this.rules.filter(r => r.on == "click").forEach(rule => {
 
@@ -244,13 +243,12 @@ module.exports = class AnimationManager {
                 return
 
             // Trigger animation
-            executedClickEvent = true
             this.performAction(rule)
 
         })
 
-        // Done
-        return executedClickEvent
+        // Done. Return true if we have any click handlers at all.
+        return this.rules.some(r => r.on == 'click')
 
     }
 

@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.1
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(name: "BLOCKv", url: "https://github.com/BLOCKvIO/ios-sdk", .revision("7011d6e22a5fae7cef7ddb35743670a9114bae19")),
+        .package(url: "https://github.com/BLOCKvIO/ios-sdk", .revision("58ffc11308fd15ec88fdaf0adcb79891246e09ca")),
         .package(url: "https://github.com/ninjaprox/NVActivityIndicatorView", from: "4.8.0"),
     ],
     targets: [

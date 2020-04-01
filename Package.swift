@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/BLOCKvIO/ios-sdk", .revision("58ffc11308fd15ec88fdaf0adcb79891246e09ca")),
+        .package(url: "https://github.com/BLOCKvIO/ios-sdk", .revision("d3ac1f167c6d88a48d63028e7432513cb29040d7")),
         .package(url: "https://github.com/ninjaprox/NVActivityIndicatorView", from: "4.8.0"),
     ],
     targets: [

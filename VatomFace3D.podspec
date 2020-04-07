@@ -18,7 +18,7 @@ Pod::Spec.new do |spec|
     spec.framework = 'WebKit'
 
     # Dependencies
-    spec.dependency 'BLOCKv' , '~> 3.2.0'
+    spec.dependency 'BLOCKv' , '~> 4.0.0-alpha'
     spec.dependency 'NVActivityIndicatorView'
     
 end

@@ -1,6 +1,6 @@
 {
   "name": "@blockv/3d-face",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "This vAtom face can plug into the SDKs to render 3D content in either binary glTF or V3D format.",
   "main": "src/index.js",
   "scripts": {
@@ -23,6 +23,7 @@
   "dependencies": {
     "@blockv/sdk": "^3.3.13",
     "hammerjs": "^2.0.8",
+    "lodash": "^4.17.20",
     "three": "^0.111.0"
   },
   "devDependencies": {

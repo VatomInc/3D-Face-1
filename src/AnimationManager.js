@@ -1,6 +1,10 @@
 //
 // Manages the animation being played by the scene
 
+const get = require('lodash/get')
+
+const ShowDebugLogs = false
+
 module.exports = class AnimationManager {
 
     /**
@@ -19,6 +23,7 @@ module.exports = class AnimationManager {
         this.clips = clips || []
         this.rules = rules || []
         this.audioListener = audioListener
+        if (ShowDebugLogs) console.debug(`[Animation Manager] Loaded, rules =`, rules)
 
         // Currently playing animation
         this.currentAnimation = ""
@@ -48,6 +53,12 @@ module.exports = class AnimationManager {
         // Set by the user of this class, will be called to map a resource name to a URL
         this.requestingResourceURL = null
 
+        // Set by the user of this class, will be called when an alert needs to be displayed to the user. If null, will use the browser's `alert()` instead.
+        this.requestingAlert = null
+
+        // Set by the user of this class, will be called when an animation rule passes a custom value to the host app. This can be used to trigger host actions, such as closing a window, etc.
+        this.requestingCustomAction = null
+
     }
 
     /** Must be called every frame by the renderer */
@@ -70,6 +81,9 @@ module.exports = class AnimationManager {
     /** Plays the specified named animation */
     play(name) {
 
+        // Expand vars in name
+        name = this.expandVars(name)
+
         // Check if currently playing animation name matches this one
         if (name == this.currentAnimation)
             return
@@ -88,6 +102,7 @@ module.exports = class AnimationManager {
             this.mixer.uncacheClip(clip)
 
         // Play this one
+        if (ShowDebugLogs) console.debug(`[Animation Manager] Playing animation = ${name}`)
         this.currentAnimation = name
         let action = this.mixer.clipAction(anim)
         action.clampWhenFinished = true
@@ -100,16 +115,68 @@ module.exports = class AnimationManager {
 
     }
 
+    /** Expand variables in the string */
+    expandVars(str) {
+
+        // Ensure it's a string
+        if (!str || !str.substring)
+            return str
+
+        // Create variable context
+        let ctx = {
+            result: this.latestResult
+        }
+
+        // Go through each item, maximum of 100 vars
+        for (let count = 0 ; count < 100 ; count++) {
+
+            // Find brackets
+            let startIdx = str.indexOf('${')
+            let endIdx = str.indexOf('}', startIdx)
+            if (startIdx == -1 || endIdx == -1)
+                break
+
+            // Get value
+            let path = str.substring(startIdx + 2, endIdx)
+            let value = get(ctx, path)
+
+            // Replace in string
+            str = str.substring(0, startIdx) + value + str.substring(endIdx + 1)
+
+        }
+
+        // Done
+        return str
+
+    }
+
+    /** Display an alert */
+    showAlert(text, title) {
+
+        // Expand vars
+        text = this.expandVars(text)
+        title = this.expandVars(title)
+
+        // Show alert, either by asking the host to show it, or just using the browser alert
+        if (this.requestingAlert)
+            this.requestingAlert(text, title)
+        else
+            alert(`${title} - ${text}`)
+
+    }
+
     /** Perform the specified action(s) from the rule payload */
     performAction(rule, isDelayedAlready) {
 
         // Execute action
-        // let info = []
-        // if (rule.delay) info.push('delay = ' + rule.delay)
-        // if (rule.play) info.push('animation = ' + rule.play)
-        // if (rule.sound) info.push('sound = ' + rule.sound.resource_name)
-        // if (rule.action) info.push('action = ' + rule.action.name)
-        // console.log(`[Animation Manager] ${rule.delay && !isDelayedAlready ? 'Delaying' : 'Executing'} ${rule.on} rule: ${info.join(', ')}`)
+        if (ShowDebugLogs) {
+            let info = []
+            if (rule.delay) info.push('delay = ' + rule.delay)
+            if (rule.play) info.push('animation = ' + rule.play)
+            if (rule.sound) info.push('sound = ' + rule.sound.resource_name)
+            if (rule.action) info.push('action = ' + rule.action.name)
+            console.debug(`[Animation Manager] ${rule.delay && !isDelayedAlready ? 'Delaying' : 'Executing'} ${rule.on} rule: ${info.join(', ')}`)
+        }
 
         // Do delay if necessary
         if (rule.delay && !isDelayedAlready)
@@ -119,62 +186,81 @@ module.exports = class AnimationManager {
         if (rule.play)
             this.play(rule.play)
 
+        // Pass custom data to the host
+        if (rule.custom && !this.requestingCustomAction)
+            console.warn(`[Animation Manager] Tried to perform custom action, but requestingCustomAction is not supplied by the host. custom = ${this.expandVars(rule.custom)}`)
+        else if (rule.custom)
+            this.requestingCustomAction(this.expandVars(rule.custom))
+
+        // Show alert
+        if (rule.alert)
+            this.showAlert(rule.alert.text, rule.alert.title)
+
         // Trigger action
         if (rule.action) {
             
             // Send action
-            Promise.resolve().then(e => this.requestingPerformAction(rule.action)).then(e => {
+            Promise.resolve().then(e => this.requestingPerformAction(rule.action)).then(result => {
 
                 // Action success, play related animations
-                console.log(`[Animation Manager] ${rule.action.name} action complete`)
+                if (ShowDebugLogs) console.debug(`[Animation Manager] ${rule.action.name} action complete`, result)
+                this.latestResult = result
                 this.rules.filter(r => r.on == 'action-complete' && (!r.target || r.target == rule.action.name)).forEach(rule => this.performAction(rule))
 
             }).catch(err => {
 
                 // Action failed, play related animations
-                console.log(`[Animation Manager] ${rule.action.name} action failed: ${err.message}`)
-                this.rules.filter(r => r.on == 'action-fail' && (!r.target || r.target == rule.action.name)).forEach(rule => this.performAction(rule))
+                console.warn(`[Animation Manager] ${rule.action.name} action failed: ${err.message}`)
+                let failRules = this.rules.filter(r => r.on == 'action-fail' && (!r.target || r.target == rule.action.name))
+                failRules.forEach(rule => this.performAction(rule))
+                if (failRules.length == 0) this.showAlert(err.message, "There was a problem")
 
             })
 
         }
 
         // Play audio
-        if (rule.sound) this.fetchAudioBuffer(rule.sound.resource_name).then(buffer => {
+        if (rule.sound) {
+            
+            let soundResource = this.expandVars(rule.sound.resource_name)
+            this.fetchAudioBuffer(this.expandVars(soundResource)).then(buffer => {
 
-            // Prevent overkill
-            let lastPlayTime = this.audioPlayTimes[rule.sound.resource_name] || 0
-            if (Date.now() - lastPlayTime < 100) return
-            this.audioPlayTimes[rule.sound.resource_name] = Date.now()
+                // Prevent overkill
+                if (ShowDebugLogs) console.debug(`[Animation Manager] Playing sound = ${soundResource}`)
+                let lastPlayTime = this.audioPlayTimes[soundResource] || 0
+                if (Date.now() - lastPlayTime < 100) return
+                this.audioPlayTimes[soundResource] = Date.now()
 
-            // Check which class to create
-            let sound = rule.sound.is_positional ? new THREE.PositionalAudio(this.audioListener) : new THREE.Audio(this.audioListener)
+                // Check which class to create
+                let sound = rule.sound.is_positional ? new THREE.PositionalAudio(this.audioListener) : new THREE.Audio(this.audioListener)
 
-            // Set buffer
-            sound.setBuffer(buffer)
+                // Set buffer
+                sound.setBuffer(buffer)
 
-            // Set volume
-            let volume = parseFloat(rule.sound.volume)
-            if (volume)
-                sound.setVolume(volume)
+                // Set volume
+                let volume = parseFloat(rule.sound.volume)
+                if (volume)
+                    sound.setVolume(volume)
 
-            // Add to scene if positional
-            if (rule.sound.is_positional) {
+                // Add to scene if positional
+                if (rule.sound.is_positional) {
 
-                // Add to scene
-                this.scene.add(sound)
+                    // Add to scene
+                    this.scene.add(sound)
 
-                // Remove from scene once sound has finished playing
-                sound.onEnded = e => {
-                    this.scene.remove(sound)
+                    // Remove from scene once sound has finished playing
+                    sound.onEnded = e => {
+                        this.scene.remove(sound)
+                    }
+
                 }
 
-            }
+                // Play
+                sound.play()
 
-            // Play
-            sound.play()
+            })
 
-        })
+        }
 
     }
 

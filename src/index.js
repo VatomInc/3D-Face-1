@@ -250,6 +250,8 @@ module.exports = class Face3D {
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload, this.audioListener)
             this.animation.requestingResourceURL = name => this.vatomView.blockv.UserManager.encodeAssetProvider(this.vatom.properties.resources.find(r => r.name == name).value.value)
+            this.animation.requestingPerformAction = actionDetails => this.vatomView.blockv.Vatoms.performAction(this.vatom.id, actionDetails.name, actionDetails.payload)
+            this.animation.requestingCustomAction = name => this.vatomView.onMessage(name, {})
 
         }).then ( e => { this.render() })
 

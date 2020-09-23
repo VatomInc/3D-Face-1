@@ -166,8 +166,9 @@ module.exports = class Face3D {
             if (this.placeholderImg.parentNode) this.placeholderImg.parentNode.removeChild(this.placeholderImg)
             if (this.loader.parentNode) this.loader.parentNode.removeChild(this.loader)
 
-            // Display scene
-            this.scene = scene
+            // Add scene
+            this.scene = new THREE.Scene()
+            this.scene.add(scene)
             this.scene.add(this.camera)
 
             // Calculate the center and radius of the scene (code from https://github.com/mrdoob/three.js/issues/1493)
@@ -178,6 +179,11 @@ module.exports = class Face3D {
             box.getCenter(this.controls.target)
             box.getCenter(this.camera.position)
 
+            // Apply extra transforms from the face config
+            let transform = this.options.transform || {}
+            if (transform.rotate)
+                scene.rotation.set(transform.rotate.x || 0, transform.rotate.y || 0, transform.rotate.z || 0)
+            
             // Set camera's near and far values, to prevent artefacts
             this.camera.near = this.sceneBSRadius * 0.1
             this.camera.far = this.sceneBSRadius * 10

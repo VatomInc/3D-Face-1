@@ -111,7 +111,7 @@ module.exports = class AnimationManager {
         action.play()
 
         // Check for "animation-start" events (also prevent replaying the animation again)
-        this.rules.filter(r => r.on == 'animation-start' && r.target == name && r.play != name).forEach(rule => this.performAction(rule))
+        this.performActions(this.rules.filter(r => r.on == 'animation-start' && r.target == name && r.play != name))
 
     }
 
@@ -165,6 +165,59 @@ module.exports = class AnimationManager {
 
     }
 
+    /** Perform the specified actions from the rules specified */
+    performActions(rules) {
+
+        // Perform all rules that don't have a condition
+        rules.filter(r => !r.condition).map(r => this.performAction(r))
+
+        // Go through each rule with a condition
+        for (let rule of rules.filter(r => r.condition)) {
+
+            // Get components
+            let matched = /(.*)(==|!=)(.*)/g.exec(rule.condition)
+            let left = matched && matched[1] || ""
+            let type = matched && matched[2] || ""
+            let right = matched && matched[3] || ""
+
+            // Expand vars
+            left = this.expandVars(left)
+            right = this.expandVars(right)
+
+            // Check type
+            let passes = false
+            if (!type && !right && left == "true") {
+
+                // Always match
+                passes = true
+
+            } else if (type == "==") {
+
+                // Check if equal
+                passes = left == right
+
+            } else if (type == "!=") {
+
+                // Check if unequal
+                passes = left != right
+
+            }
+
+            // Stop if didn't pass
+            if (!passes) {
+                console.log('[Animation Manager] Condition did not pass', left, type, right)
+                continue
+            }
+
+            // Passed, run it
+            console.log('[Animation Manager] Condition passed', left, type, right)
+            this.performAction(rule)
+            return
+
+        }
+
+    }
+
     /** Perform the specified action(s) from the rule payload */
     performAction(rule, isDelayedAlready) {
 
@@ -200,20 +253,25 @@ module.exports = class AnimationManager {
         if (rule.action) {
             
             // Send action
-            Promise.resolve().then(e => this.requestingPerformAction(rule.action)).then(result => {
+            this.runningVatomAction = Promise.resolve().then(e => this.requestingPerformAction(rule.action)).then(result => {
 
                 // Action success, play related animations
                 if (ShowDebugLogs) console.debug(`[Animation Manager] ${rule.action.name} action complete`, result)
                 this.latestResult = result
-                this.rules.filter(r => r.on == 'action-complete' && (!r.target || r.target == rule.action.name)).forEach(rule => this.performAction(rule))
+                this.performActions(this.rules.filter(r => r.on == 'action-complete' && (!r.target || r.target == rule.action.name)))
 
             }).catch(err => {
 
                 // Action failed, play related animations
                 console.warn(`[Animation Manager] ${rule.action.name} action failed: ${err.message}`)
                 let failRules = this.rules.filter(r => r.on == 'action-fail' && (!r.target || r.target == rule.action.name))
-                failRules.forEach(rule => this.performAction(rule))
                 if (failRules.length == 0) this.showAlert(err.message, "There was a problem")
+                else this.performActions(failRules)
+
+            }).then(e => {
+
+                // Remove running action
+                this.runningVatomAction = null
 
             })
 
@@ -301,7 +359,7 @@ module.exports = class AnimationManager {
         }
 
         // Go through all "start" rules
-        this.rules.filter(r => r.on == "start").forEach(rule => this.performAction(rule))
+        this.performActions(this.rules.filter(r => r.on == "start"))
 
     }
 
@@ -313,25 +371,21 @@ module.exports = class AnimationManager {
         this.currentAnimation = ""
 
         // Go through all rules matching what to do next
-        this.rules.filter(r => r.on == "animation-complete" && r.target == lastAnimation).forEach(rule => this.performAction(rule))
+        this.performActions(this.rules.filter(r => r.on == "animation-complete" && r.target == lastAnimation))
 
     }
 
     /** Call this when the user clicks on the 3D model. Returns `true` if a click rule was executed. */
     onClick() {
 
+        // Stop if an action is running
+        if (this.runningVatomAction) {
+            console.log("[Animation Manager] Click ignored since there's a running action.")
+            return true
+        }
+
         // Fetch click events
-        let currentAnimation = this.currentAnimation
-        this.rules.filter(r => r.on == "click").forEach(rule => {
-
-            // Check if target matches
-            if (typeof rule.target != "undefined" && rule.target != currentAnimation)
-                return
-
-            // Trigger animation
-            this.performAction(rule)
-
-        })
+        this.performActions(this.rules.filter(r => r.on == "click" && (typeof r.target == "undefined" || r.target == this.currentAnimation)))
 
         // Done. Return true if we have any click handlers at all.
         return this.rules.some(r => r.on == 'click')
@@ -342,6 +396,7 @@ module.exports = class AnimationManager {
     onStateChanged(newState) {
 
         // Go through each rule
+        let rulesToPerform = []
         for (let rule of this.rules) {
 
             // Check rule type
@@ -367,9 +422,12 @@ module.exports = class AnimationManager {
                 continue
 
             // Matched!
-            this.performAction(rule)
+            rulesToPerform.push(rule)
 
         }
+
+        // Do them
+        this.performActions(rulesToPerform)
 
     }
 

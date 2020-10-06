@@ -59,6 +59,9 @@ module.exports = class AnimationManager {
         // Set by the user of this class, will be called when an animation rule passes a custom value to the host app. This can be used to trigger host actions, such as closing a window, etc.
         this.requestingCustomAction = null
 
+        // Set by the user of this class, will be called when an animation rule wants to remove this object.
+        this.requestingRemove = null
+
     }
 
     /** Must be called every frame by the renderer */
@@ -320,6 +323,10 @@ module.exports = class AnimationManager {
 
         }
 
+        // Remove object if requested
+        if (rule.remove && this.requestingRemove)
+            this.requestingRemove()
+
     }
 
     /** Fetch audio buffer */
@@ -428,6 +435,17 @@ module.exports = class AnimationManager {
 
         // Do them
         this.performActions(rulesToPerform)
+
+    }
+
+    /** Call this when the 3D model is going to be removed. Returns `true` if a rule was executed. */
+    onRemoveAction() {
+
+        // Run actions
+        this.performActions(this.rules.filter(r => r.on == "remove" && (typeof r.target == "undefined" || r.target == this.currentAnimation)))
+
+        // Done. Return true if we have any remove handlers at all.
+        return this.rules.some(r => r.on == 'remove')
 
     }
 

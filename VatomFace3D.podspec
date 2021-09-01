@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
 
     # Pod info
     spec.name                   = 'VatomFace3D'
-    spec.version                = '3.0.4'
+    spec.version                = '3.2.4'
     spec.license                = { :type => 'ISC' }
     spec.author                 = { 'BLOCKv' => 'developer.blockv.io' }
     spec.homepage               = 'https://github.com/BLOCKvIO/3D-Face'

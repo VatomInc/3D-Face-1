@@ -6,9 +6,21 @@ This is a face for the Android, iOS and Web BLOCKv SDKs, which allows rendering 
 
 First add it to your gradle dependencies:
 
-``` kotlin
+```gradle
+//  In root build.gradle
+allprojects {
+  ...
+  repositories {
+    ...
+    maven { url "https://jitpack.io" }
+  }
+}
+```
+
+``` gradle
+//  In app/build.gradle
 dependencies {
-    implementation 'io.blockv.faces:face3d:1.0.5'
+    implementation 'com.github.VatomInc:3d-face:+'
 }
 ```
 

@@ -53,7 +53,7 @@ publishing {
             afterEvaluate {
                 from components.release
                 groupId = 'com.github.VatomInc'
-                artifactId = 'face3d'
+                artifactId = '3DFace'
                 version = sdkVersion
             }
         }

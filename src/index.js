@@ -69,7 +69,7 @@ module.exports = class Face3D {
         let resname = this.face.config && this.face.config.placeholder_image || "ActivatedImage"
         let res = this.vatom.properties.resources.find(r => r.name == resname)
         if (res)
-            this.placeholderImg.style.backgroundImage = "url(" + this.vatomView.blockv.UserManager.encodeAssetProvider(res.value.value) + ")"
+            this.placeholderImg.style.backgroundImage = "url(" + this.vatomView.vatomNet.UserManager.encodeAssetProvider(res.value.value) + ")"
 
         // Create loader
         this.loader = createThreeDotLoader()
@@ -156,7 +156,7 @@ module.exports = class Face3D {
         var isGLB = (resource.value.value || '').toLowerCase().indexOf(".v3d") == -1
 
         // Load scene
-        return Promise.resolve(this.vatomView.blockv.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
+        return Promise.resolve(this.vatomView.vatomNet.UserManager.encodeAssetProvider(resource.value.value || '')).then(resourceURL => 
             isGLB 
                 ? this.loadGLTFScene(resourceURL) 
                 : V3DLoader.load(resourceURL).then(scene => ({ scene }))
@@ -255,8 +255,8 @@ module.exports = class Face3D {
 
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload, this.audioListener)
-            this.animation.requestingResourceURL = name => this.vatomView.blockv.UserManager.encodeAssetProvider(this.vatom.properties.resources.find(r => r.name == name).value.value)
-            this.animation.requestingPerformAction = actionDetails => this.vatomView.blockv.Vatoms.performAction(this.vatom.id, actionDetails.name, actionDetails.payload)
+            this.animation.requestingResourceURL = name => this.vatomView.vatomNet.UserManager.encodeAssetProvider(this.vatom.properties.resources.find(r => r.name == name).value.value)
+            this.animation.requestingPerformAction = actionDetails => this.vatomView.vatomNet.Vatoms.performAction(this.vatom.id, actionDetails.name, actionDetails.payload)
             this.animation.requestingCustomAction = name => this.vatomView.onMessage(name, {})
 
         }).then ( e => { this.render() })

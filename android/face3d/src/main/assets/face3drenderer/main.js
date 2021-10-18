@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var vatomView = {
 
         // Replace the Web SDK's signing function with our one
-        blockv: {
+        vatomNet: {
             UserManager: {
                 encodeAssetProvider: signURL
             }

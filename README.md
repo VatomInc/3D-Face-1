@@ -67,8 +67,8 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 To use in the Web SDK, simply import and register when your app starts up:
 
 ``` javascript
-import { VatomView } from '@blockv/sdk/face'
-import Face3D from '@blockv/3d-face'
+import { VatomView } from '@vatom/sdk/face'
+import Face3D from '@vatom/3d-face'
 
 VatomView.registerFace(Face3D)
 ```

@@ -5,7 +5,6 @@ window.THREE = window.THREE || require("three")
 require("./GLTFLoader.js")
 
 // Other imports
-const createThreeDotLoader = require('./ThreeDotLoader')
 const OrbitControls = require('./OrbitControls')
 const Hammer = require('hammerjs')
 const AnimationManager = require('./AnimationManager')
@@ -72,9 +71,9 @@ module.exports = class Face3D {
             this.placeholderImg.style.backgroundImage = "url(" + this.vatomView.vatomNet.UserManager.encodeAssetProvider(res.value.value) + ")"
 
         // Create loader
-        this.loader = createThreeDotLoader()
-        this.loader.style.cssText = "position: absolute; pointer-events: none; bottom: 25%; left: calc(50% - 35px); width: 70px; background-color: rgba(255, 255, 255, 0.95); border-radius: 4px; "
-        this.element.appendChild(this.loader)
+        // this.loader = createThreeDotLoader()
+        // this.loader.style.cssText = "position: absolute; pointer-events: none; bottom: 25%; left: calc(50% - 35px); width: 70px; background-color: rgba(255, 255, 255, 0.95); border-radius: 4px; "
+        // this.element.appendChild(this.loader)
 
         // Prepare 3D
         this.renderer = new THREE.WebGLRenderer({
@@ -164,7 +163,7 @@ module.exports = class Face3D {
 
             // Hide loader and placeholder image
             if (this.placeholderImg.parentNode) this.placeholderImg.parentNode.removeChild(this.placeholderImg)
-            if (this.loader.parentNode) this.loader.parentNode.removeChild(this.loader)
+            // if (this.loader.parentNode) this.loader.parentNode.removeChild(this.loader)
 
             // Add scene
             this.scene = new THREE.Scene()

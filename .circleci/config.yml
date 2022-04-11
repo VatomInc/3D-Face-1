@@ -6,7 +6,7 @@
 version: 2
 defaults: &defaults
   docker:
-    - image: circleci/node:8.9.3
+    - image: circleci/node:16.3.0
   working_directory: ~/3d-face
 jobs:
   build-3d-face:

@@ -1074,9 +1074,9 @@ THREE.GLTFLoader = (function () {
 					uniforms.specularMap.value = v;
 
 					if (v) {
-						this.defines.USE_SPECULARMAP = ""; // USE_UV is set by the renderer for specular maps
+						this.defines?.USE_SPECULARMAP = ""; // USE_UV is set by the renderer for specular maps
 					} else {
-						delete this.defines.USE_SPECULARMAP;
+						delete this.defines?.USE_SPECULARMAP;
 					}
 				},
 			},
@@ -1098,11 +1098,11 @@ THREE.GLTFLoader = (function () {
 					uniforms.glossinessMap.value = v;
 
 					if (v) {
-						this.defines.USE_GLOSSINESSMAP = "";
-						this.defines.USE_UV = "";
+						this.defines?.USE_GLOSSINESSMAP = "";
+						this.defines?.USE_UV = "";
 					} else {
-						delete this.defines.USE_GLOSSINESSMAP;
-						delete this.defines.USE_UV;
+						delete this.defines?.USE_GLOSSINESSMAP;
+						delete this.defines?.USE_UV;
 					}
 				},
 			},

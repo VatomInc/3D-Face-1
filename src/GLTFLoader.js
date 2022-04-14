@@ -949,7 +949,8 @@
 					uniforms.reflectivity.value = material.reflectivity;
 					uniforms.refractionRatio.value = material.refractionRatio;
 
-					uniforms.maxMipLevel.value = renderer.properties.get( material.envMap ).__maxMipLevel;
+					if (uniforms.maxMipLevel)
+						uniforms.maxMipLevel.value = renderer.properties.get( material.envMap ).__maxMipLevel;
 
 				}
 

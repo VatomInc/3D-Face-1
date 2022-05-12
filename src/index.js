@@ -81,8 +81,8 @@ module.exports = class Face3D {
             alpha: true,
             antialias: window.devicePixelRatio == 1
         })
-        this.renderer.gammaOutput = true;
-        this.renderer.gammaFactor = 1.7;
+        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        // this.renderer.gammaFactor = 1.7;
         this.renderer.setClearColor(0, 0)
         this.renderer.setPixelRatio(window.devicePixelRatio || 1)
 

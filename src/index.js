@@ -274,9 +274,9 @@ module.exports = class Face3D {
 
         // Create URLs
         const cubeMapURLs = [
-            require("./skybox/posx.jpg"), require("./skybox/negx.jpg"),
-            require("./skybox/posy.jpg"), require("./skybox/negy.jpg"),
-            require("./skybox/posz.jpg"), require("./skybox/negz.jpg")
+            require("./skybox/posx.jpg").default, require("./skybox/negx.jpg").default,
+            require("./skybox/posy.jpg").default, require("./skybox/negy.jpg").default,
+            require("./skybox/posz.jpg").default, require("./skybox/negz.jpg").default
         ]
 
         // Create loader

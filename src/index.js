@@ -220,7 +220,9 @@ module.exports = class Face3D {
             if (this.vatom.private.no_camera_light)
                 this.cameraLight.parent.remove(this.cameraLight)
 
-            if (this.vatom.private["studio-info-v1"]?.businessId !== "PoIvoqVCm3") {
+            const studioInfo = this.vatom.private["studio-info-v1"]
+
+            if (studioInfo && studioInfo.businessId !== "PoIvoqVCm3") {
                 // Load skybox texture
                 Face3D.loadSkyboxCubeMap().then(skyboxTexture => {
 

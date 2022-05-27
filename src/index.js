@@ -281,7 +281,7 @@ module.exports = class Face3D {
 
         // Create loader
         var envMap = new THREE.CubeTextureLoader().load(cubeMapURLs)
-        envMap.format = THREE.RGBFormat
+        envMap.format = THREE.RGBAFormat
         Face3D.skyboxPromise = Promise.resolve(envMap)
 
         // Return promise

@@ -220,37 +220,39 @@ module.exports = class Face3D {
             if (this.vatom.private.no_camera_light)
                 this.cameraLight.parent.remove(this.cameraLight)
 
-            // Load skybox texture
-            Face3D.loadSkyboxCubeMap().then(skyboxTexture => {
+            if (this.vatom.private["studio-info-v1"]?.businessId !== "PoIvoqVCm3") {
+                // Load skybox texture
+                Face3D.loadSkyboxCubeMap().then(skyboxTexture => {
 
-                // Apply skybox texture as env map to all materials. First traverse each object
-                // Adapted from https://github.com/donmccurdy/three-gltf-viewer/blob/98ad8ee8528e87a4654ef7a86cf79042ba1dcea3/src/viewer.js#L394
-                this.scene.traverse(node => {
+                    // Apply skybox texture as env map to all materials. First traverse each object
+                    // Adapted from https://github.com/donmccurdy/three-gltf-viewer/blob/98ad8ee8528e87a4654ef7a86cf79042ba1dcea3/src/viewer.js#L394
+                    this.scene.traverse(node => {
 
-                    // Stop if not a mesh
-                    if (!node.isMesh) {
-                        return
-                    } else {
-                        node.castShadow = true;
-                        node.receiveShadow = true;
-                    }
-
-                    // Get materials array
-                    var materials = Array.isArray(node.material) ? node.material : [node.material]
-
-                    // Go through each material
-                    materials.forEach(material => {
-
-                        // Apply env map if supported material type
-                        if (material.isMeshStandardMaterial || material.isGLTFSpecularGlossinessMaterial) {
-                            material.envMap = skyboxTexture
-                            material.needsUpdate = true
+                        // Stop if not a mesh
+                        if (!node.isMesh) {
+                            return
+                        } else {
+                            node.castShadow = true;
+                            node.receiveShadow = true;
                         }
 
-                    })
-                })
+                        // Get materials array
+                        var materials = Array.isArray(node.material) ? node.material : [node.material]
 
-            })
+                        // Go through each material
+                        materials.forEach(material => {
+
+                            // Apply env map if supported material type
+                            if (material.isMeshStandardMaterial || material.isGLTFSpecularGlossinessMaterial) {
+                                material.envMap = skyboxTexture
+                                material.needsUpdate = true
+                            }
+
+                        })
+                    })
+
+                })
+            }
 
             // Create animation manager
             this.animation = new AnimationManager(this.scene, animations, this.options.animation_rules, this.vatom.payload, this.audioListener)

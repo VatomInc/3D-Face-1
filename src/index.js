@@ -1,6 +1,6 @@
 // Import the THREE.js 3D library
-window.THREE = window.THREE || require("../node_modules/three")
-
+import * as THREE from "three"
+window.THREE = window.THREE || THREE
 
 // Attach GLTFLoader, which is not yet a core part of THREE.js. It's being actively developed, so get updates from https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js
 const GLTFLoader = require("./GLTFLoader.js")
@@ -16,7 +16,7 @@ const V3DLoader = require('./V3DLoader')
 // Desired distance of the camera from the scene, in multiples of the scene radius
 const CAMERA_DISTANCE_MULTIPLIER = 1
 
-module.exports = class Face3D {
+export default class Face3D {
 
     constructor (vatomView, vatom, face) {
 
@@ -52,6 +52,7 @@ module.exports = class Face3D {
         // Store options
         this.options = this.face.properties.config || this.vatom.private || {}
         // Create clock to measure delta between frames
+        console.log("acá",THREE.Clock)
         this.clock = new THREE.Clock()
 
         // Create canvas

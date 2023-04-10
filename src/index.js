@@ -1,8 +1,9 @@
 // Import the THREE.js 3D library
 window.THREE = window.THREE || require("three")
 
+
 // Attach GLTFLoader, which is not yet a core part of THREE.js. It's being actively developed, so get updates from https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js
-require("./GLTFLoader.js")
+const GLTFLoader = require("./GLTFLoader.js")
 
 // Other imports
 const OrbitControls = require('./OrbitControls')
@@ -50,7 +51,6 @@ module.exports = class Face3D {
 
         // Store options
         this.options = this.face.properties.config || this.vatom.private || {}
-
         // Create clock to measure delta between frames
         this.clock = new THREE.Clock()
 
@@ -88,7 +88,7 @@ module.exports = class Face3D {
 
         // Setup camera and orbit controls
         this.camera = new THREE.PerspectiveCamera(60, this.element.clientWidth / this.element.clientHeight, 0.01, 100)
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+        this.controls = new OrbitControls.OrbitControls(this.camera, this.renderer.domElement)
         this.controls.enabled = true;
         this.controls.enableZoom = true;
         this.controls.enablePan = true;
@@ -296,7 +296,7 @@ module.exports = class Face3D {
         return new Promise((onSuccess, onFail) => {
 
             // Load scene
-            var ldr = new THREE.GLTFLoader()
+            var ldr = new GLTFLoader.GLTFLoader()
             ldr.load(url, onSuccess, null, onFail)
 
         })

@@ -1,5 +1,5 @@
 // Import the THREE.js 3D library
-window.THREE = window.THREE || require("three")
+window.THREE = window.THREE || require("../node_modules/three")
 
 
 // Attach GLTFLoader, which is not yet a core part of THREE.js. It's being actively developed, so get updates from https://github.com/mrdoob/three.js/blob/dev/examples/js/loaders/GLTFLoader.js

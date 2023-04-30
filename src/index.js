@@ -280,10 +280,12 @@ export default class Face3D {
             require("./skybox/posz.jpg").default, require("./skybox/negz.jpg").default
         ]
 
+        console.info("Loading skybox", cubeMapURLs)
+
         // Create loader
         var envMap = new THREE.CubeTextureLoader().load(cubeMapURLs)
         envMap.format = THREE.RGBAFormat
-        Face3D.skyboxPromise = Promise.resolve(envMap)
+        Face3D.skyboxPromise = Promise.resolve(envMap).catch(console.error)
 
         // Return promise
         return Face3D.skyboxPromise

@@ -192,10 +192,10 @@ export default class Face3D {
             this.camera.position.z = this.sceneBSRadius * CAMERA_DISTANCE_MULTIPLIER * (this.options.zoom || 1)
             this.camera.updateProjectionMatrix()
 
-            var light = new THREE.AmbientLight(0x768b97, 0.5); // soft white light
+            var light = new THREE.AmbientLight(0x404040, 0.5); // soft white light
             scene.add(light);
 
-            var spotLight = new THREE.SpotLight(0xffffff, 0.5);
+            var spotLight = new THREE.SpotLight(0x768b97, 0.5);
             spotLight.position.set(500, 400, 200);
             spotLight.angle = 0.4;
             spotLight.penumbra = 0.05;

@@ -195,7 +195,7 @@ export default class Face3D {
             var light = new THREE.AmbientLight(0x768b97, 0.5); // soft white light
             scene.add(light);
 
-            var spotLight = new THREE.SpotLight(0xffffff, 1);
+            var spotLight = new THREE.SpotLight(0xffffff, 0.5);
             spotLight.position.set(500, 400, 200);
             spotLight.angle = 0.4;
             spotLight.penumbra = 0.05;
